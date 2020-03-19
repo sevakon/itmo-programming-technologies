@@ -1,1 +1,1 @@
-# ifmo-programming-technologies
+# Programming Technologies
