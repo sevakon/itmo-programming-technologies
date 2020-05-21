@@ -61,7 +61,7 @@ public class BankAccountDataAccessService extends JdbcDaoSupport implements Bank
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, isolation = Isolation.READ_COMMITTED)
+    @Transactional(propagation = Propagation.SUPPORTS, isolation = Isolation.SERIALIZABLE)
     public void addAmount(Long id, Long amount) throws BankTransactionException {
         BankAccount queriedAccount = findBankAccount(id);
 
