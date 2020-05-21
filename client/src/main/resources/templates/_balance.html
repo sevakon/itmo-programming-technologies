@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bank</title>
+
+    <style>
+        th, td {
+            padding: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+<!-- Include _menu.html -->
+<th:block th:include="/_menu"></th:block>
+
+<h2>Account Balance</h2>
+
+<table border="1">
+    <tr>
+        <th>Balance</th>
+    </tr>
+    <tr>
+        <td th:utext="${balance}">..</td>
+    </tr>
+</table>
+</body>
+</html>
