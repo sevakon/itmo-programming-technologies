@@ -52,6 +52,9 @@ public class BankAccountService {
 
     public void transfer(Long fromAccountId, Long toAccountId, Long amount)
             throws BankTransactionException {
+        if (amount < 0) {
+            throw new BankTransactionException("Transfer amount should be positive!");
+        }
         bankAccountDao.transfer(fromAccountId, toAccountId, amount);
     }
 
