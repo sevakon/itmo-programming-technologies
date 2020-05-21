@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.server.exception.BankTransactionException;
@@ -60,7 +61,7 @@ public class BankAccountDataAccessService extends JdbcDaoSupport implements Bank
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS, isolation = Isolation.READ_COMMITTED)
     public void addAmount(Long id, Long amount) throws BankTransactionException {
         BankAccount queriedAccount = findBankAccount(id);
 
