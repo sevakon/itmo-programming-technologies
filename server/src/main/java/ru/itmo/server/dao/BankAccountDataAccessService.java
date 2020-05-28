@@ -1,11 +1,9 @@
 package ru.itmo.server.dao;
 
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,20 +76,7 @@ public class BankAccountDataAccessService extends JdbcDaoSupport implements Bank
         Long newBalance = queriedAccount.getBalance() + amount;
         queriedAccount.setBalance(newBalance);
 
-        boolean executedSuccessfully = false;
-
-        while (!executedSuccessfully) {
-            try {
-                getJdbcTemplate().update(UPDATE_SQL, queriedAccount.getBalance(), queriedAccount.getId());
-            } catch (TransactionSystemException e) {
-                if (e.getCause() != null && e.getCause().getCause() instanceof PSQLException) {
-                    PSQLException nestedException = (PSQLException) e.getCause().getCause();
-                    System.out.println(nestedException.getMessage());
-                }
-            } finally {
-                executedSuccessfully = true;
-            }
-        }
+        getJdbcTemplate().update(UPDATE_SQL, queriedAccount.getBalance(), queriedAccount.getId());
     }
 
     @Override
