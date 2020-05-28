@@ -1,16 +1,12 @@
 package ru.itmo.client.service;
 
-import com.google.gson.Gson;
-import org.json.JSONObject;
-import org.springframework.http.*;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 import ru.itmo.client.model.AddAmountForm;
 import ru.itmo.client.model.BankAccount;
 import ru.itmo.client.model.TransferMoneyForm;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class ClientService {

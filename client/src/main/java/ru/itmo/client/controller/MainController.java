@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.client.RestTemplate;
 import ru.itmo.client.model.AddAmountForm;
 import ru.itmo.client.model.BankAccount;
 import ru.itmo.client.model.TransferMoneyForm;

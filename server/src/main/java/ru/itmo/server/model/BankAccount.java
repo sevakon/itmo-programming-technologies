@@ -1,6 +1,7 @@
 package ru.itmo.server.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotNull;
 
 

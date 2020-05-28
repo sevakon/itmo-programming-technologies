@@ -1,9 +1,11 @@
 package ru.itmo.server.dao;
 
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ public class BankAccountDataAccessService extends JdbcDaoSupport implements Bank
     @Override
     public List<BankAccount> getBankAccounts() {
         BankAccountMapperService mapper = new BankAccountMapperService();
-        return this.getJdbcTemplate().query(BASE_SQL, new Object[] {}, mapper);
+        return getJdbcTemplate().query(BASE_SQL, new Object[] {}, mapper);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class BankAccountDataAccessService extends JdbcDaoSupport implements Bank
         BankAccountMapperService mapper = new BankAccountMapperService();
 
         try {
-            return this.getJdbcTemplate().queryForObject(SEARCH_SQL, params, mapper);
+            return getJdbcTemplate().queryForObject(SEARCH_SQL, params, mapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -56,12 +58,12 @@ public class BankAccountDataAccessService extends JdbcDaoSupport implements Bank
 
     @Override
     public void addBankAccount(BankAccount bankAccount) {
-        this.getJdbcTemplate().update(INSERT_SQL, bankAccount.getId(),
+        getJdbcTemplate().update(INSERT_SQL, bankAccount.getId(),
                 bankAccount.getFullName(), bankAccount.getBalance());
     }
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS, isolation = Isolation.SERIALIZABLE)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
     public void addAmount(Long id, Long amount) throws BankTransactionException {
         BankAccount queriedAccount = findBankAccount(id);
 
@@ -76,7 +78,20 @@ public class BankAccountDataAccessService extends JdbcDaoSupport implements Bank
         Long newBalance = queriedAccount.getBalance() + amount;
         queriedAccount.setBalance(newBalance);
 
-        this.getJdbcTemplate().update(UPDATE_SQL, queriedAccount.getBalance(), queriedAccount.getId());
+        boolean executedSuccessfully = false;
+
+        while (!executedSuccessfully) {
+            try {
+                getJdbcTemplate().update(UPDATE_SQL, queriedAccount.getBalance(), queriedAccount.getId());
+            } catch (TransactionSystemException e) {
+                if (e.getCause() != null && e.getCause().getCause() instanceof PSQLException) {
+                    PSQLException nestedException = (PSQLException) e.getCause().getCause();
+                    System.out.println(nestedException.getMessage());
+                }
+            } finally {
+                executedSuccessfully = true;
+            }
+        }
     }
 
     @Override
